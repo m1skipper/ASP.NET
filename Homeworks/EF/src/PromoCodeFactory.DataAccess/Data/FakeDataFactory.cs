@@ -27,7 +27,7 @@ namespace PromoCodeFactory.DataAccess.Data
                 LastName = "Андреев",
                 Role = Roles.FirstOrDefault(x => x.Name == "PartnerManager"),
                 AppliedPromocodesCount = 10
-            },
+            }
         };
 
         public static IEnumerable<Role> Roles => new List<Role>()
@@ -78,7 +78,20 @@ namespace PromoCodeFactory.DataAccess.Data
                         Email = "ivan_sergeev@mail.ru",
                         FirstName = "Иван",
                         LastName = "Петров",
-                        //TODO: Добавить предзаполненный список предпочтений
+                        // Добавить предзаполненный список предпочтений
+                        Preferences = new List<Preference>() { Preferences.FirstOrDefault(x => x.Name == "Дети") }                       
+                    },
+                    new Customer()
+                    {
+                        Id = Guid.NewGuid(),
+                        Email = "pertp@mail.ru",
+                        FirstName = "Петр",
+                        LastName = "Сидоров",
+                        // Добавить предзаполненный список предпочтений
+                        Preferences = new List<Preference>() { 
+                            Preferences.FirstOrDefault(x => x.Name == "Дети"),
+                            Preferences.FirstOrDefault(x => x.Name == "Театр")
+                        }
                     }
                 };
 

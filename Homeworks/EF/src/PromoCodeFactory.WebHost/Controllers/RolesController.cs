@@ -14,6 +14,7 @@ namespace PromoCodeFactory.WebHost.Controllers
     [ApiController]
     [Route("api/v1/[controller]")]
     public class RolesController
+                : ControllerBase
     {
         private readonly IRepository<Role> _rolesRepository;
 

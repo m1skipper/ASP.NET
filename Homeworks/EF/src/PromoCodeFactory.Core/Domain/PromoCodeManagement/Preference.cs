@@ -1,4 +1,6 @@
-﻿namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
+﻿using System.Collections.Generic;
+
+namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
 {
     public class Preference
         : BaseEntity
