@@ -25,5 +25,7 @@ jobs:
       working-directory: Homeworks/UnitTests/src
     - name: Build
       run: dotnet build --no-restore
+      working-directory: Homeworks/UnitTests/src
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      working-directory: Homeworks/UnitTests/src
