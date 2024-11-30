@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using PromoCodeFactory.WebHost.Helpers;
 using PromoCodeFactory.WebHost.Models;
 
 namespace PromoCodeFactory.WebHost.Controllers
@@ -90,26 +91,12 @@ namespace PromoCodeFactory.WebHost.Controllers
             if(partner.PartnerLimits == null)
                 partner.PartnerLimits = new List<PartnerPromoCodeLimit>();
 
-            //Установка лимита партнеру
-            var now = DateTime.UtcNow;
-            var activeLimit = partner.PartnerLimits.FirstOrDefault(x =>
-                !x.CancelDate.HasValue
-                && now < x.EndDate); // Исправление: активный лимит, это тот который не закончился(по времени) и не отменён. (Не проходил тест 3.2 и 4)
-
-            if (activeLimit != null)
-            {
-                // Если партнеру выставляется лимит, то мы 
-                // должны обнулить количество промокодов, которые партнер выдал,
-                // если лимит закончился, то количество не обнуляется
-                partner.NumberIssuedPromoCodes = 0;
-
-                //При установке лимита нужно отключить предыдущий лимит
-                activeLimit.CancelDate = now;
-            }
-
             if (request.Limit <= 0)
                 return BadRequest("Лимит должен быть больше 0");
-            
+
+            // Отменим прошлый активный лимит, если он есть
+            PartnerPromoCodeLimitHelper.CancelPartnerPromoCodeActiveLimit(partner);
+
             var newLimit = new PartnerPromoCodeLimit()
             {
                 Limit = request.Limit,
@@ -138,15 +125,11 @@ namespace PromoCodeFactory.WebHost.Controllers
             if (!partner.IsActive)
                 return BadRequest("Данный партнер не активен");
 
-            //Отключение лимита
-            var now = DateTime.Now;
-            var activeLimit = partner.PartnerLimits.FirstOrDefault(x =>
-                !x.CancelDate.HasValue
-                && now < x.EndDate); // Исправление: ищем только те лимиты, которые ещё действуют (написан тест 8 в CancelPartnerCodeLimitAsyncTest.cs)
-
+            // Отключение лимита
+            var activeLimit = PartnerPromoCodeLimitHelper.CancelPartnerPromoCodeActiveLimit(partner);
             if (activeLimit != null)
             {
-                activeLimit.CancelDate = now;
+                // Если лимит был, то обновим репозиторий
                 await _partnersRepository.UpdateAsync(partner);
             }
 
