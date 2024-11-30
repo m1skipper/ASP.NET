@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FluentAssertions;
@@ -47,7 +49,7 @@ namespace PromoCodeFactory.UnitTests.WebHost.Controllers.Partners
         }
         
         [Fact]
-        public async void CancelPartnerPromoCodeLimitAsync_PartnerIsNotFound_ReturnsNotFound()
+        public async Task CancelPartnerPromoCodeLimitAsync_PartnerIsNotFound_ReturnsNotFound()
         {
             // Arrange
             var partnerId = Guid.Parse("def47943-7aaf-44a1-ae21-05aa4948b165");
@@ -62,23 +64,44 @@ namespace PromoCodeFactory.UnitTests.WebHost.Controllers.Partners
             // Assert
             result.Should().BeAssignableTo<NotFoundResult>();
         }
-        
+
         [Fact]
-        public async void CancelPartnerPromoCodeLimitAsync_PartnerIsNotActive_ReturnsBadRequest()
+        public async Task CancelPartnerPromoCodeLimitAsync_PartnerIsNotActive_ReturnsBadRequest()
         {
             // Arrange
             var partnerId = Guid.Parse("def47943-7aaf-44a1-ae21-05aa4948b165");
             var partner = CreateBasePartner();
             partner.IsActive = false;
-            
+
             _partnersRepositoryMock.Setup(repo => repo.GetByIdAsync(partnerId))
                 .ReturnsAsync(partner);
 
             // Act
             var result = await _partnersController.CancelPartnerPromoCodeLimitAsync(partnerId);
- 
+
             // Assert
             result.Should().BeAssignableTo<BadRequestObjectResult>();
         }
+
+        // 8. Если лимит уже закончен, то взводился CancelDate. Не должно ничего происходить, т.к. CancelDate взводится, только для активных лимитов, а не завершенных
+        [Fact]
+        public async Task CancelPartnerPromoCodeLimitAsync_PartnerWithExpiredLimits_LimitCanceled()
+        {
+            // Arrange
+            var partnerId = Guid.Parse("def47943-7aaf-44a1-ae21-05aa4948b165");
+            var partner = CreateBasePartner();
+            partner.IsActive = true;
+
+            _partnersRepositoryMock.Setup(repo => repo.GetByIdAsync(partnerId))
+                .ReturnsAsync(partner);
+
+            // Act
+            var result = await _partnersController.CancelPartnerPromoCodeLimitAsync(partnerId);
+
+            // Assert
+            result.Should().BeAssignableTo<NoContentResult>();
+            partner.PartnerLimits.First().CancelDate.Should().BeNull();
+        }
+
     }
 }

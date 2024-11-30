@@ -85,20 +85,26 @@ namespace PromoCodeFactory.WebHost.Controllers
             //Если партнер заблокирован, то нужно выдать исключение
             if (!partner.IsActive)
                 return BadRequest("Данный партнер не активен");
-            
+
+            // Исправление: Добавлена проверка на null и написан тест 7
+            if(partner.PartnerLimits == null)
+                partner.PartnerLimits = new List<PartnerPromoCodeLimit>();
+
             //Установка лимита партнеру
-            var activeLimit = partner.PartnerLimits.FirstOrDefault(x => 
-                !x.CancelDate.HasValue);
-            
+            var now = DateTime.UtcNow;
+            var activeLimit = partner.PartnerLimits.FirstOrDefault(x =>
+                !x.CancelDate.HasValue
+                && now < x.EndDate); // Исправление: активный лимит, это тот который не закончился(по времени) и не отменён. (Не проходил тест 3.2 и 4)
+
             if (activeLimit != null)
             {
-                //Если партнеру выставляется лимит, то мы 
-                //должны обнулить количество промокодов, которые партнер выдал, если лимит закончился, 
-                //то количество не обнуляется
+                // Если партнеру выставляется лимит, то мы 
+                // должны обнулить количество промокодов, которые партнер выдал,
+                // если лимит закончился, то количество не обнуляется
                 partner.NumberIssuedPromoCodes = 0;
-                
+
                 //При установке лимита нужно отключить предыдущий лимит
-                activeLimit.CancelDate = DateTime.Now;
+                activeLimit.CancelDate = now;
             }
 
             if (request.Limit <= 0)
@@ -112,7 +118,7 @@ namespace PromoCodeFactory.WebHost.Controllers
                 CreateDate = DateTime.Now,
                 EndDate = request.EndDate
             };
-            
+
             partner.PartnerLimits.Add(newLimit);
 
             await _partnersRepository.UpdateAsync(partner);
@@ -131,17 +137,18 @@ namespace PromoCodeFactory.WebHost.Controllers
             //Если партнер заблокирован, то нужно выдать исключение
             if (!partner.IsActive)
                 return BadRequest("Данный партнер не активен");
-            
+
             //Отключение лимита
-            var activeLimit = partner.PartnerLimits.FirstOrDefault(x => 
-                !x.CancelDate.HasValue);
-            
+            var now = DateTime.Now;
+            var activeLimit = partner.PartnerLimits.FirstOrDefault(x =>
+                !x.CancelDate.HasValue
+                && now < x.EndDate); // Исправление: ищем только те лимиты, которые ещё действуют (написан тест 8 в CancelPartnerCodeLimitAsyncTest.cs)
+
             if (activeLimit != null)
             {
-                activeLimit.CancelDate = DateTime.Now;
+                activeLimit.CancelDate = now;
+                await _partnersRepository.UpdateAsync(partner);
             }
-
-            await _partnersRepository.UpdateAsync(partner);
 
             return NoContent();
         }
