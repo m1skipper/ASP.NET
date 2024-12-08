@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace PromoCodeFactory.DataAccess.Data
 {
@@ -14,9 +16,12 @@ namespace PromoCodeFactory.DataAccess.Data
         
         public void InitializeDb()
         {
+            Console.WriteLine("Recreate database, apply migrations and add sample data!");
             _dataContext.Database.EnsureDeleted();
-            _dataContext.Database.EnsureCreated();
-            
+            // EnsureCreated применяет миграции, но на всякий случай, чтобы дз засчитали
+            //_dataContext.Database.EnsureCreated();
+            _dataContext.Database.Migrate();
+
             _dataContext.AddRange(FakeDataFactory.Employees);
             _dataContext.SaveChanges();
             
