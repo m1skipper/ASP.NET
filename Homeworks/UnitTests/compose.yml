@@ -16,6 +16,7 @@ services:
   #Api
   promocode-factory-api:
     build: src
+    image: m1skipper/edu
     container_name: 'promocode-factory-api'
     restart: always
     ports:
@@ -26,18 +27,18 @@ services:
       - promocode-factory-db
 
   #PgAdmin
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    hostname: pgadmin
-    restart: always
-    environment: 
-      PGADMIN_DEFAULT_EMAIL: admin@m.ru
-      PGADMIN_DEFAULT_PASSWORD: 1
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    ports:
-      - "5050:80"
+#  pgadmin:
+#    image: dpage/pgadmin4:latest
+#    hostname: pgadmin
+#    restart: always
+#    environment: 
+#      PGADMIN_DEFAULT_EMAIL: admin@m.ru
+#      PGADMIN_DEFAULT_PASSWORD: 1
+#    volumes:
+#      - pgadmin-data:/var/lib/pgadmin
+#    ports:
+#      - "5050:80"
 
 volumes:
   db:
-  pgadmin-data:
+#  pgadmin-data:
