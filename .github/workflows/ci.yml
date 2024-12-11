@@ -30,6 +30,7 @@ jobs:
       working-directory: Homeworks/UnitTests/src
 
   buildDockerAndPublish:
+    needs: buildAndTest
     runs-on: ubuntu-latest
 
     steps:
