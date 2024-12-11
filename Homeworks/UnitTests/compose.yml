@@ -15,8 +15,8 @@ services:
 
   #Api
   promocode-factory-api:
-    build: src
-    image: m1skipper/edu
+#    build: src
+    image: "m1skipper/edu:latest"
     container_name: 'promocode-factory-api'
     restart: always
     ports:

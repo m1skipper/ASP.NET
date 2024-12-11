@@ -1,0 +1,1 @@
+docker push m1skipper/edu

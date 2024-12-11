@@ -1,1 +1,1 @@
-docker build src -t promocodes:latest
+docker build src -t m1skipper/edu:latest

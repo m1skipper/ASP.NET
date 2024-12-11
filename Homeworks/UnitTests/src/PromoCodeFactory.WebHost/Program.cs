@@ -13,6 +13,7 @@ namespace PromoCodeFactory.WebHost
     {
         public static void Main(string[] args)
         {
+	        Console.WriteLine("Starting service...");
             CreateHostBuilder(args).Build().Run();
         }
 
