@@ -25,12 +25,12 @@ namespace Pcf.GivingToCustomer.WebHost.Models
             Email = customer.Email;
             FirstName = customer.FirstName;
             LastName = customer.LastName;
-            Preferences = customer.Preferences.Select(x => new PreferenceResponse()
+            Preferences = customer.Preferences?.Select(x => new PreferenceResponse()
             {
                 Id = x.PreferenceId,
                 Name = x.Preference.Name
             }).ToList();
-            PromoCodes = customer.PromoCodes.Select(x => new PromoCodeShortResponse()
+            PromoCodes = customer.PromoCodes?.Select(x => new PromoCodeShortResponse()
                 {
                     Id = x.PromoCode.Id,
                     Code = x.PromoCode.Code,

@@ -21,13 +21,15 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         private readonly IRepository<PromoCode> _promoCodesRepository;
         private readonly IRepository<Preference> _preferencesRepository;
         private readonly IRepository<Customer> _customersRepository;
+        private readonly IRepository<CustomerPreference> _customerPreferenceRepository;
 
         public PromocodesController(IRepository<PromoCode> promoCodesRepository, 
-            IRepository<Preference> preferencesRepository, IRepository<Customer> customersRepository)
+            IRepository<Preference> preferencesRepository, IRepository<Customer> customersRepository, IRepository<CustomerPreference> customersPreferenceRepository)
         {
             _promoCodesRepository = promoCodesRepository;
             _preferencesRepository = preferencesRepository;
             _customersRepository = customersRepository;
+            _customerPreferenceRepository = customersPreferenceRepository;
         }
         
         /// <summary>
@@ -68,9 +70,14 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
             }
 
             //  Получаем клиентов с этим предпочтением:
-            var customers = await _customersRepository
-                .GetWhere(d => d.Preferences.Any(x =>
-                    x.Preference.Id == preference.Id));
+            var customerPrefs = await _customerPreferenceRepository.GetWhere(e => e.PreferenceId == request.PreferenceId);
+            var customerIds = customerPrefs.Select(c => c.CustomerId).ToList();
+            var customers = await _customersRepository.GetRangeByIdsAsync(customerIds);
+
+            // Так было в EF PostgreSql, но текущая реализация EF MongoDb не поддерживает
+            //var customers = await _customersRepository
+            //    .GetWhere(d => d.Preferences.Any(x =>
+            //        x.Preference.Id == preference.Id));
 
             PromoCode promoCode = PromoCodeMapper.MapFromModel(request, preference, customers);
 

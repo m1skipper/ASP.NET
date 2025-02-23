@@ -104,9 +104,10 @@ namespace Pcf.GivingToCustomer.IntegrationTests.Api.WebHost.Controllers
                     new PreferenceResponse()
                     {
                         Id = Guid.Parse("76324c47-68d2-472d-abb8-33cfa8cc0c84"),
-                        Name = "Дети",                    
+                        Name = "Дети",
                     }
-                }
+                },
+                PromoCodes = new List<PromoCodeShortResponse>() { }
             };
 
             //Act
