@@ -24,19 +24,21 @@ using Pcf.GivingToCustomer.WebHost.Models;
             promocode.Preference = preference;
             promocode.PreferenceId = preference.Id;
 
-            promocode.Customers = new List<PromoCodeCustomer>();
-
-            foreach (var item in customers)
+            if (customers != null)
             {
-                promocode.Customers.Add(new PromoCodeCustomer()
+                promocode.Customers = new List<PromoCodeCustomer>();
+                foreach (var item in customers)
                 {
+                    promocode.Customers.Add(new PromoCodeCustomer()
+                    {
 
-                    CustomerId = item.Id,
-                    Customer = item,
-                    PromoCodeId = promocode.Id,
-                    PromoCode = promocode
-                });
-            };
+                        CustomerId = item.Id,
+                        Customer = item,
+                        PromoCodeId = promocode.Id,
+                        PromoCode = promocode
+                    });
+                }
+            }
 
             return promocode;
         }

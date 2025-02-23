@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using Castle.Core.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using Pcf.GivingToCustomer.Core.Abstractions.Gateways;
-using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
 using Pcf.GivingToCustomer.DataAccess;
 using Pcf.GivingToCustomer.DataAccess.Data;
-using Pcf.GivingToCustomer.DataAccess.Repositories;
 using Pcf.GivingToCustomer.Integration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using Microsoft.Extensions.Configuration;
+using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
+using Pcf.GivingToCustomer.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -35,14 +35,22 @@ namespace Pcf.GivingToCustomer.WebHost
         {
             services.AddControllers().AddMvcOptions(x=> 
                 x.SuppressAsyncSuffixInActionNames = false);
-            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<INotificationGateway, NotificationGateway>();
+
             services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+
+            var mongoDbSettings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();
+            var client = new MongoClient(mongoDbSettings.Connection);
             services.AddDbContext<DataContext>(x =>
             {
                 //x.UseSqlite("Filename=PromocodeFactoryGivingToCustomerDb.sqlite");
-                x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
-                x.UseSnakeCaseNamingConvention();
+
+                //x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
+                //x.UseSnakeCaseNamingConvention();
+                //x.UseLazyLoadingProxies();
+
+                x.UseMongoDB(client, mongoDbSettings.DatabaseName);
                 x.UseLazyLoadingProxies();
             });
 
