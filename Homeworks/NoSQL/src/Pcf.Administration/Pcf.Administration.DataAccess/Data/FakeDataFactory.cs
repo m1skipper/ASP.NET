@@ -15,7 +15,7 @@ namespace Pcf.Administration.DataAccess.Data
                 Email = "owner@somemail.ru",
                 FirstName = "Иван",
                 LastName = "Сергеев",
-                Role = Roles.FirstOrDefault(x => x.Name == "Admin"),
+                RoleId = Roles.Where(x => x.Name == "Admin").Select(x=>x.Id).FirstOrDefault(),
                 AppliedPromocodesCount = 5
             },
             new Employee()
@@ -24,7 +24,7 @@ namespace Pcf.Administration.DataAccess.Data
                 Email = "andreev@somemail.ru",
                 FirstName = "Петр",
                 LastName = "Андреев",
-                Role = Roles.FirstOrDefault(x => x.Name == "PartnerManager"),
+                RoleId = Roles.Where(x => x.Name == "PartnerManager").Select(x=>x.Id).FirstOrDefault(),
                 AppliedPromocodesCount = 10
             },
         };

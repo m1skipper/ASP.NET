@@ -88,3 +88,11 @@ https://github.com/mongodb/mongo-efcore-provider)
 
 9) Тесты проходят, контроллеры протестированы
 ![Tests](./Tests.png)
+
+10) Добавлен перевод сервиса Administration на MongoDb  
+
+В случае сервиса Administration перевод сделан по другой схеме не на MongoDB Entity Framework Core Provider, а на более низком уровне MongoDB.Driver:
+
+EFRepository заменён на MongoRepository, где работа ведётся через IMongoCollection  
+
+Исправлены тесты и добавлена ещё одна база в compose.yml

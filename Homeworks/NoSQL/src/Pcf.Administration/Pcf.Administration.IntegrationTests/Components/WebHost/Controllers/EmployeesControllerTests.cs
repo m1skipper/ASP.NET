@@ -8,16 +8,18 @@ using Xunit;
 
 namespace Pcf.Administration.IntegrationTests.Components.WebHost.Controllers
 {
-    [Collection(EfDatabaseCollection.DbCollection)]
-    public class EmployeesControllerTests: IClassFixture<EfDatabaseFixture>
+    [Collection(DatabaseCollection.DbCollection)]
+    public class EmployeesControllerTests: IClassFixture<DatabaseFixture>
     {
-        private EfRepository<Employee> _employeesRepository;
+        private MongoRepository<Employee> _employeesRepository;
+        private MongoRepository<Role> _rolesRepository;
         private EmployeesController _employeesController;
 
-        public EmployeesControllerTests(EfDatabaseFixture efDatabaseFixture)
+        public EmployeesControllerTests(DatabaseFixture databaseFixture)
         {
-            _employeesRepository = new EfRepository<Employee>(efDatabaseFixture.DbContext);
-            _employeesController = new EmployeesController(_employeesRepository);
+            _employeesRepository = new MongoRepository<Employee>(databaseFixture.DbContext);
+            _rolesRepository = new MongoRepository<Role>(databaseFixture.DbContext);
+            _employeesController = new EmployeesController(_employeesRepository, _rolesRepository);
         }
 
         [Fact]

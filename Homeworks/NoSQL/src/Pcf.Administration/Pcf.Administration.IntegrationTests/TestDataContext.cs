@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Pcf.Administration.DataAccess;
+﻿using Pcf.Administration.DataAccess;
+using Pcf.Administration.DataAccess.Data;
 
 namespace Pcf.Administration.IntegrationTests
 {
     public class TestDataContext
         : DataContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public TestDataContext() : base(new MongoDBSettings()
         {
-            optionsBuilder.UseSqlite("Filename=PromocodeFactoryAdministrationDb.sqlite");
+            Connection = "mongodb://admin:docker@localhost:27018/",
+            DatabaseName = "testAdministrationDb"
+        })
+        {
         }
     }
 }
