@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Pcf.ReceivingFromPartner\Pcf.ReceivingFromPartner.Integration\Pcf.ReceivingFromPartner.Integration.csproj" />
       <ProjectReference Include="..\Pcf.Administration.Core\Pcf.Administration.Core.csproj" />
       <ProjectReference Include="..\Pcf.Administration.DataAccess\Pcf.Administration.DataAccess.csproj" />
     </ItemGroup>
@@ -19,5 +20,10 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
       <PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
     </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MassTransit" Version="8.3.6" />
+    	<PackageReference Include="MassTransit.RabbitMQ" Version="8.3.6" />
+	</ItemGroup>
 
 </Project>

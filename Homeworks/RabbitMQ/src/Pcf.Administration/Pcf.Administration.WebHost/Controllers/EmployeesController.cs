@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Pcf.Administration.Core.Abstractions.Repositories;
 using Pcf.Administration.Core.Domain.Administration;
+using Pcf.Administration.Core.Services;
 using Pcf.Administration.WebHost.Models;
 
 namespace Pcf.Administration.WebHost.Controllers
@@ -18,10 +19,12 @@ namespace Pcf.Administration.WebHost.Controllers
         : ControllerBase
     {
         private readonly IRepository<Employee> _employeeRepository;
+        private readonly AppliedPromocodesService _appliedPromocodesService;
 
-        public EmployeesController(IRepository<Employee> employeeRepository)
+        public EmployeesController(IRepository<Employee> employeeRepository, AppliedPromocodesService appliedPromocodesService)
         {
             _employeeRepository = employeeRepository;
+            _appliedPromocodesService = appliedPromocodesService;
         }
 
         /// <summary>
@@ -83,15 +86,7 @@ namespace Pcf.Administration.WebHost.Controllers
 
         public async Task<IActionResult> UpdateAppliedPromocodesAsync(Guid id)
         {
-            var employee = await _employeeRepository.GetByIdAsync(id);
-
-            if (employee == null)
-                return NotFound();
-
-            employee.AppliedPromocodesCount++;
-
-            await _employeeRepository.UpdateAsync(employee);
-
+            await _appliedPromocodesService.UpdateAppliedPromocodesAsync(id);
             return Ok();
         }
     }

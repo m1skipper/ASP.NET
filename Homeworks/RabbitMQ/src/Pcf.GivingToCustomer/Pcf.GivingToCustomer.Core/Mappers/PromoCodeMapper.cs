@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Pcf.GivingToCustomer.Core.Domain;
-using Pcf.GivingToCustomer.WebHost.Models;
+using Pcf.GivingToCustomer.Core.Models;
 
-namespace Pcf.GivingToCustomer.WebHost.Mappers
+namespace Pcf.GivingToCustomer.Core.Mappers
 {
     public class PromoCodeMapper
     {

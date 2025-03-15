@@ -7,11 +7,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
-using Pcf.GivingToCustomer.Core.Abstractions.Gateways;
 using Pcf.GivingToCustomer.DataAccess.Data;
 using Pcf.GivingToCustomer.DataAccess;
 using Pcf.GivingToCustomer.DataAccess.Repositories;
-using Pcf.GivingToCustomer.Integration;
+using MassTransit;
+using Pcf.GivingToCustomer.Core.Services;
+using Pcf.GivingToCustomer.WebHost.Consumers;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -31,7 +32,37 @@ namespace Pcf.GivingToCustomer.WebHost
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            services.AddScoped<INotificationGateway, NotificationGateway>();
+
+            services.AddScoped<PromocodesService>();
+
+            //services.AddScoped<INotificationGateway, NotificationGateway>();
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    //cfg.Host("rabbitmq://localhost:15672/", h =>
+                    //    {
+                    //    h.Username("admin");
+                    //    h.Password("docker");
+                    //});
+                    cfg.Host("localhost", h =>
+                    {
+                        h.Username("admin");
+                        h.Password("docker");
+                    });
+                    cfg.ConfigureEndpoints(context);
+                });
+                x.AddConsumer<PromocodeConsumer>();
+            });
+            services.Configure<MassTransitHostOptions>(options =>
+            {
+                options.WaitUntilStarted = true;
+                options.StartTimeout = TimeSpan.FromSeconds(30);
+                options.StopTimeout = TimeSpan.FromMinutes(10);
+                options.ConsumerStopTimeout = TimeSpan.FromMinutes(10);
+            });
+            //services.AddScoped(typeof(INotificationGateway), typeof(NotificationMasstransitGateway));
+
             services.AddScoped<IDbInitializer, EfDbInitializer>();
             services.AddDbContext<DataContext>(x =>
             {
