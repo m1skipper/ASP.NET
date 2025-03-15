@@ -10,6 +10,10 @@ using Pcf.Administration.DataAccess.Repositories;
 using Pcf.Administration.DataAccess.Data;
 using Pcf.Administration.Core.Abstractions.Repositories;
 using System;
+using MassTransit;
+using Pcf.ReceivingFromPartner.Core.Domain;
+using Pcf.Administration.WebHost.Consumers;
+using Pcf.Administration.Core.Services;
 
 namespace Pcf.Administration.WebHost
 {
@@ -36,6 +40,34 @@ namespace Pcf.Administration.WebHost
                 x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryAdministrationDb"));
                 x.UseSnakeCaseNamingConvention();
                 x.UseLazyLoadingProxies();
+            });
+
+            services.AddScoped<AppliedPromocodesService>();
+
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    //cfg.Host("rabbitmq://localhost:15672/", h =>
+                    //    {
+                    //    h.Username("admin");
+                    //    h.Password("docker");
+                    //});
+                    cfg.Host("localhost", h =>
+                    {
+                        h.Username("admin");
+                        h.Password("docker");
+                    });
+                    cfg.ConfigureEndpoints(context);
+                });
+                x.AddConsumer<PromocodeConsumer>().Endpoint(p => p.Name = "AdministrationQueue");
+            });
+            services.Configure<MassTransitHostOptions>(options =>
+            {
+                options.WaitUntilStarted = true;
+                options.StartTimeout = TimeSpan.FromSeconds(30);
+                options.StopTimeout = TimeSpan.FromMinutes(10);
+                options.ConsumerStopTimeout = TimeSpan.FromMinutes(10);
             });
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

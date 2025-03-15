@@ -4,6 +4,7 @@ using Pcf.ReceivingFromPartner.Integration.Dto;
 using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
 using Pcf.ReceivingFromPartner.Core.Domain;
 using MassTransit;
+using System;
 
 namespace Pcf.ReceivingFromPartner.Integration
 {
@@ -30,7 +31,9 @@ namespace Pcf.ReceivingFromPartner.Integration
                 PartnerManagerId = promoCode.PartnerManagerId
             };
 
-            await _publishEndpoint.Publish<GivePromoCodeToCustomerDto>(dto);
+            Console.WriteLine($"ReceivingFromPartner Publish {promoCode.PartnerManagerId}");
+
+            await _publishEndpoint.Publish(dto);
         }
     }
 }

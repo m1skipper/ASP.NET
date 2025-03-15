@@ -11,8 +11,8 @@ using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
 using Pcf.ReceivingFromPartner.DataAccess;
 using Pcf.ReceivingFromPartner.DataAccess.Repositories;
 using Pcf.ReceivingFromPartner.DataAccess.Data;
-using Pcf.ReceivingFromPartner.Integration;
 using MassTransit;
+using Pcf.ReceivingFromPartner.Integration;
 
 namespace Pcf.ReceivingFromPartner.WebHost
 {
@@ -32,7 +32,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            services.AddScoped<INotificationGateway, NotificationGateway>();
+            
             services.AddScoped<IDbInitializer, EfDbInitializer>();
 
             services.AddMassTransit(x =>
@@ -58,17 +58,23 @@ namespace Pcf.ReceivingFromPartner.WebHost
                 options.StopTimeout = TimeSpan.FromMinutes(1);
             });
 
+            // 1.
             services.AddScoped(typeof(IGivingPromoCodeToCustomerGateway), typeof(GivingPromoCodeToCustomerMassTransitGateway));
-
             //services.AddHttpClient<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>(c =>
             //{
             //    c.BaseAddress = new Uri(Configuration["IntegrationSettings:GivingToCustomerApiUrl"]);
             //});
 
+            // 2.
+            //services.AddScoped(typeof(IAdministrationGateway), typeof(AdministrationMasstransitGateway));
             services.AddHttpClient<IAdministrationGateway, AdministrationGateway>(c =>
             {
                 c.BaseAddress = new Uri(Configuration["IntegrationSettings:AdministrationApiUrl"]);
             });
+
+            // 3.
+            //services.AddScoped<INotificationGateway, NotificationMasstransitGateway>();
+            services.AddScoped<INotificationGateway, NotificationGateway>();
 
             services.AddDbContext<DataContext>(x =>
             {
