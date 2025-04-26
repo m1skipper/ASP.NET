@@ -11,7 +11,6 @@ using Pcf.Administration.DataAccess.Data;
 using Pcf.Administration.Core.Abstractions.Repositories;
 using System;
 using MassTransit;
-using Pcf.ReceivingFromPartner.Core.Domain;
 using Pcf.Administration.WebHost.Consumers;
 using Pcf.Administration.Core.Services;
 

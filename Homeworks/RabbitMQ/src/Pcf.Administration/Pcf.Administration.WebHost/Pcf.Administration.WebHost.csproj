@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Pcf.ReceivingFromPartner\Pcf.ReceivingFromPartner.Integration\Pcf.ReceivingFromPartner.Integration.csproj" />
       <ProjectReference Include="..\Pcf.Administration.Core\Pcf.Administration.Core.csproj" />
       <ProjectReference Include="..\Pcf.Administration.DataAccess\Pcf.Administration.DataAccess.csproj" />
     </ItemGroup>

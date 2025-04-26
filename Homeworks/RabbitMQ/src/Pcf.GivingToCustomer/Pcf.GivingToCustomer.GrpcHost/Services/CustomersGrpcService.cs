@@ -6,6 +6,8 @@ using Pcf.GivingToCustomer.Core.Domain;
 using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
 using System.Linq;
 using Preference = Pcf.GivingToCustomer.Core.Domain.Preference;
+using Pcf.GivingToCustomer.Core.Models;
+using Pcf.GivingToCustomer.Core.Services;
 
 namespace Pcf.GivingToCustomer.GrpcHost.Services
 {
@@ -13,12 +15,15 @@ namespace Pcf.GivingToCustomer.GrpcHost.Services
     {
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<Preference> _preferenceRepository;
+        private readonly PromocodesService _promocodesService;
 
         public CustomersGrpcService(IRepository<Customer> customerRepository,
-            IRepository<Preference> preferenceRepository)
+            IRepository<Preference> preferenceRepository,
+            PromocodesService promocodesService)
         {
             _customerRepository = customerRepository;
             _preferenceRepository = preferenceRepository;
+            _promocodesService = promocodesService;
         }
 
         /// <summary>
@@ -104,6 +109,24 @@ namespace Pcf.GivingToCustomer.GrpcHost.Services
             return new VoidResponse();
         }
 
+        public override async Task<GivePromoCodeToCustomerResponse> GivePromoCodeToCustomer(GivePromoCodeToCustomerRequest grec, ServerCallContext context)
+        {        
+            Console.WriteLine($"GivingToCustomer grpc {grec.PartnerId}");
+
+            GivePromoCodeRequest request = new()
+            {
+                ServiceInfo = grec.ServiceInfo,
+                PartnerId = Guid.Parse(grec.PartnerId),
+                PromoCode = grec.PromoCode,
+                PreferenceId = Guid.Parse(grec.PreferenceId),
+                BeginDate = grec.BeginDate,
+                EndDate = grec.EndDate
+            };
+
+            var result = await _promocodesService.GivePromoCodesToCustomersWithPreferenceAsync(request);
+            return MapPromoCode(result);
+        }
+
         #region Mappers
         private PreferenceResponse MapPreference(CustomerPreference preference)
         {
@@ -122,6 +145,13 @@ namespace Pcf.GivingToCustomer.GrpcHost.Services
             response.BeginDate = promoCode.PromoCode.BeginDate.ToString();
             response.EndDate = promoCode.PromoCode.EndDate.ToString();
             response.PartnerId = promoCode.PromoCode.PartnerId.ToString();
+            return response;
+        }
+
+        private GivePromoCodeToCustomerResponse MapPromoCode(PromoCode promoCode)
+        {
+            var response = new GivePromoCodeToCustomerResponse();
+            response.Code = promoCode.Code;
             return response;
         }
 

@@ -41,6 +41,16 @@ appsettings.json
 с запущенного сервиса.
 9) Сервисы протестированы в postman. Работают аналогично контроллерам.
 ![Пример postman](./grpcCustomersService.png)
+10) В микросервис ReceivingFromParnter.Integration вместо MassTransit добавлен клиент gprc и 
+класс нотификации через grpc GivingPromoCodeToCustomerGrpcGateway 
+и при выдаче промокода клиенту, он посылает событие grpc на Customer
+```
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new CustomersService.CustomersServiceClient(channel);
+            GivePromoCodeToCustomerResponse reply = await client.GivePromoCodeToCustomerAsync(request);
+```
+![После выдачи промокода](./GivePromocode.png)
+
 
 ### Подключаем GraphQL
 
