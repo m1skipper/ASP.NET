@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+option csharp_namespace = "Pcf.GivingToCustomer.GrpcHost";
+
+service CustomersService {
+  
+  rpc GetCustomers(VoidRequest) returns (CustomerShortResponseList);
+
+  rpc GetCustomer(CustomerRequest) returns (CustomerResponse);
+
+  rpc CreateCustomer(CreateCustomerRequest) returns (CustomerResponse);
+
+  rpc EditCustomer(EditCustomerRequest) returns (VoidResponse);
+
+  rpc DeleteCustomer(DeleteCustomerRequest) returns (VoidResponse);
+}
+
+message PreferenceResponse {
+    string id = 1;
+    string name = 2;
+}
+
+message PromoCodeShortResponse {
+    string id = 1;
+    string code = 2;
+    string serviceInfo = 3;
+    string beginDate = 4;
+    string endDate = 5;
+    string partnerId = 6;
+}
+
+message CustomerShortResponse {
+    string id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+}
+
+message CustomerShortResponseList {
+    repeated CustomerShortResponse customers = 1;
+}
+
+message CustomerResponse {
+    string id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;    
+    repeated PreferenceResponse preferences = 5;
+    repeated PromoCodeShortResponse promoCodes = 6;
+}
+
+message CreateCustomerRequest {
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+    repeated string preferenceIds = 5;
+}
+
+message EditCustomerRequest {
+    string id = 1;
+    string firstName = 2;
+    string lastName = 3;
+    string email = 4;
+    repeated string preferenceIds = 5;
+}
+
+message DeleteCustomerRequest {
+    string id = 1;
+}
+
+message CustomerRequest {
+    string id = 1;
+}
+
+// пустое сообщение запроса
+message VoidRequest { }
+
+message VoidResponse { }
+ 
