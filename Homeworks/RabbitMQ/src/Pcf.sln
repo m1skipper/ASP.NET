@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.Administration.Integrat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.GrpcHost", "Pcf.GivingToCustomer\Pcf.GivingToCustomer.GrpcHost\Pcf.GivingToCustomer.GrpcHost.csproj", "{0C5DB81D-CF73-D4FB-725E-FA3CA1DBCD9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.GraphQLHost", "Pcf.GivingToCustomer\Pcf.GivingToCustomer.GraphQLHost\Pcf.GivingToCustomer.GraphQLHost.csproj", "{B94A6D50-74A6-2358-6930-B36C1A6D3F38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{0C5DB81D-CF73-D4FB-725E-FA3CA1DBCD9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C5DB81D-CF73-D4FB-725E-FA3CA1DBCD9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C5DB81D-CF73-D4FB-725E-FA3CA1DBCD9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B94A6D50-74A6-2358-6930-B36C1A6D3F38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B94A6D50-74A6-2358-6930-B36C1A6D3F38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B94A6D50-74A6-2358-6930-B36C1A6D3F38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B94A6D50-74A6-2358-6930-B36C1A6D3F38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +131,7 @@ Global
 		{3C4538FC-B200-4DC1-B278-DE43800B0BE3} = {45AAAE31-1D5D-400B-ADAA-DE16D7B95BD5}
 		{38F1FFB6-5EBF-4EDF-B74E-AF29B0F1ABF7} = {92A39EB2-4342-42A8-A30F-36DB3B5D2C95}
 		{0C5DB81D-CF73-D4FB-725E-FA3CA1DBCD9D} = {F097559C-FEF3-49AE-A893-C9061181CEE2}
+		{B94A6D50-74A6-2358-6930-B36C1A6D3F38} = {F097559C-FEF3-49AE-A893-C9061181CEE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {74F2C1E4-F8FB-4CC5-8C40-16A031F65DC2}

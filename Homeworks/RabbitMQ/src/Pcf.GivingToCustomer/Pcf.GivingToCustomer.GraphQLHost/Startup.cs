@@ -6,15 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
-using Pcf.ReceivingFromPartner.Core.Abstractions.Repositories;
-using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
-using Pcf.ReceivingFromPartner.DataAccess;
-using Pcf.ReceivingFromPartner.DataAccess.Repositories;
-using Pcf.ReceivingFromPartner.DataAccess.Data;
+using Pcf.GivingToCustomer.Core.Abstractions.Repositories;
+using Pcf.GivingToCustomer.DataAccess.Data;
+using Pcf.GivingToCustomer.DataAccess;
+using Pcf.GivingToCustomer.DataAccess.Repositories;
 using MassTransit;
-using Pcf.ReceivingFromPartner.Integration;
+using Pcf.GivingToCustomer.Core.Services;
+using Pcf.GivingToCustomer.WebHost.Consumers;
+using Pcf.GivingToCustomer.GraphQLHost.GraphQL;
 
-namespace Pcf.ReceivingFromPartner.WebHost
+namespace Pcf.GivingToCustomer.WebHost
 {
     public class Startup
     {
@@ -32,9 +33,13 @@ namespace Pcf.ReceivingFromPartner.WebHost
             services.AddControllers().AddMvcOptions(x =>
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            
-            services.AddScoped<IDbInitializer, EfDbInitializer>();
 
+            services.AddScoped<PromocodesService>();
+            services.AddGraphQLServer()
+                    .AddMutationType<CustomersMutation>()
+                    .AddQueryType<CustomersQuery>();
+
+            //services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
@@ -49,41 +54,25 @@ namespace Pcf.ReceivingFromPartner.WebHost
                         h.Username("admin");
                         h.Password("docker");
                     });
+                    cfg.ConfigureEndpoints(context);
                 });
+                x.AddConsumer<PromocodeConsumer>();
             });
+
             services.Configure<MassTransitHostOptions>(options =>
             {
                 options.WaitUntilStarted = true;
                 options.StartTimeout = TimeSpan.FromSeconds(30);
-                options.StopTimeout = TimeSpan.FromMinutes(1);
+                options.StopTimeout = TimeSpan.FromMinutes(10);
+                options.ConsumerStopTimeout = TimeSpan.FromMinutes(10);
             });
+            //services.AddScoped(typeof(INotificationGateway), typeof(NotificationMasstransitGateway));
 
-            // 1.
-            //services.AddScoped(typeof(IGivingPromoCodeToCustomerGateway), typeof(GivingPromoCodeToCustomerMassTransitGateway));
-
-            //services.AddScoped(typeof(IGivingPromoCodeToCustomerGateway), typeof(GivingPromoCodeToCustomerGrpcGateway));
-            services.AddScoped(typeof(IGivingPromoCodeToCustomerGateway), typeof(GivingPromoCodeToCustomerGrapgQLGateway));
-
-            //services.AddHttpClient<IGivingPromoCodeToCustomerGateway, GivingPromoCodeToCustomerGateway>(c =>
-            //{
-            //    c.BaseAddress = new Uri(Configuration["IntegrationSettings:GivingToCustomerApiUrl"]);
-            //});
-
-            // 2.
-            //services.AddScoped(typeof(IAdministrationGateway), typeof(AdministrationMasstransitGateway));
-            services.AddHttpClient<IAdministrationGateway, AdministrationGateway>(c =>
-            {
-                c.BaseAddress = new Uri(Configuration["IntegrationSettings:AdministrationApiUrl"]);
-            });
-
-            // 3.
-            //services.AddScoped<INotificationGateway, NotificationMasstransitGateway>();
-            services.AddScoped<INotificationGateway, NotificationGateway>();
-
+            services.AddScoped<IDbInitializer, EfDbInitializer>();
             services.AddDbContext<DataContext>(x =>
             {
-                //x.UseSqlite("Filename=PromocodeFactoryReceivingFromPartnerDb.sqlite");
-                x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryReceivingFromPartnerDb"));
+                //x.UseSqlite("Filename=PromocodeFactoryGivingToCustomerDb.sqlite");
+                x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
                 x.UseSnakeCaseNamingConvention();
                 x.UseLazyLoadingProxies();
             });
@@ -92,7 +81,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
 
             services.AddOpenApiDocument(options =>
             {
-                options.Title = "PromoCode Factory Receiving From Partner API Doc";
+                options.Title = "PromoCode Factory Giving To Customer API Doc";
                 options.Version = "1.0";
             });
         }
@@ -108,7 +97,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
             {
                 app.UseHsts();
             }
-
+            
             app.UseOpenApi();
             app.UseSwaggerUi(x =>
             {
@@ -121,6 +110,7 @@ namespace Pcf.ReceivingFromPartner.WebHost
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGraphQL();
                 endpoints.MapControllers();
             });
 
